@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <iostream>
 #include <random>
 #include <string>
@@ -19,15 +20,19 @@ class Dice {
 
 class Game {
     bool start_state;
+    int64_t games;
     Dice dice1, dice2;
     bool result;  // true:Even false:Odd
     bool answer;  // true:Even false:Odd
+    int64_t wins;
 
    public:
     Game() {
         start_state = false;
+        games = 0;
         result = true;
         answer = true;
+        wins = 0;
     }
 
     bool start_menu() {
@@ -72,13 +77,17 @@ class Game {
 
         if (result && answer) {
             judge = true;
+            ++wins;
         } else if (!result && answer) {
             judge = false;
         } else if (!result && !answer) {
             judge = true;
+            ++wins;
         } else if (result && !answer) {
             judge = false;
         }
+
+        ++games;
 
         return judge;
     }
@@ -101,6 +110,10 @@ class Game {
         }
     }
 
+    double get_winning_percentage() {
+        return static_cast<double>(wins) / games;
+    }
+
     void show_result() {
         std::cout << "Dice[1]:" << dice1.get_number()
                   << " Dice[2]:" << dice2.get_number() << '\n';
@@ -110,6 +123,10 @@ class Game {
         } else {
             std::cout << "Odd.\n";
         }
+
+        std::cout << "Games:" << games << " Wins:" << wins << '\n';
+        std::cout << std::fixed << std::setprecision(3)
+                  << "Winning percentage:" << get_winning_percentage() << '\n';
     }
 };
 
