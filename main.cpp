@@ -18,21 +18,40 @@ class Dice {
     }
 };
 
+class User {
+    bool answer;  // true:Even false:Odd
+    bool winner;
+    int64_t wins;
+    int64_t games;
+
+   public:
+    User() {
+        answer = true;
+        winner = true;
+        wins = 0;
+        games = 0;
+    }
+
+    void set_answer(bool is_even) { answer = is_even; }
+    void set_winner(bool is_win) { winner = is_win; }
+    void add_win() { ++wins; }
+    void add_game() { ++games; }
+    const bool& get_answer() { return answer; }
+    const bool& get_winner() { return winner; }
+    const int64_t& get_wins() { return wins; }
+    const int64_t& get_games() { return games; }
+};
+
 class Game {
     bool start_state;
-    int64_t games;
     Dice dice1, dice2;
     bool result;  // true:Even false:Odd
-    bool answer;  // true:Even false:Odd
-    int64_t wins;
+    User user;
 
    public:
     Game() {
         start_state = false;
-        games = 0;
         result = true;
-        answer = true;
-        wins = 0;
     }
 
     bool start_menu() {
@@ -71,25 +90,22 @@ class Game {
         dice2.shake();
     }
 
-    bool judge() {
+    void judge() {
         result = (dice1.get_number() + dice2.get_number()) % 2 == 0;
-        bool judge{true};
 
-        if (result && answer) {
-            judge = true;
-            ++wins;
-        } else if (!result && answer) {
-            judge = false;
-        } else if (!result && !answer) {
-            judge = true;
-            ++wins;
-        } else if (result && !answer) {
-            judge = false;
+        if (result && user.get_answer()) {
+            user.set_winner(true);
+            user.add_win();
+        } else if (!result && user.get_answer()) {
+            user.set_winner(false);
+        } else if (!result && !user.get_answer()) {
+            user.set_winner(true);
+            user.add_win();
+        } else if (result && !user.get_answer()) {
+            user.set_winner(false);
         }
 
-        ++games;
-
-        return judge;
+        user.add_game();
     }
 
     void bet() {
@@ -99,10 +115,10 @@ class Game {
             std::cin >> str;
 
             if (str == "e") {
-                answer = true;
+                user.set_answer(true);
                 break;
             } else if (str == "o") {
-                answer = false;
+                user.set_answer(false);
                 break;
             }
 
@@ -111,7 +127,7 @@ class Game {
     }
 
     double get_winning_percentage() {
-        return static_cast<double>(wins) / games;
+        return static_cast<double>(user.get_wins()) / user.get_games();
     }
 
     void show_result() {
@@ -124,7 +140,14 @@ class Game {
             std::cout << "Odd.\n";
         }
 
-        std::cout << "Games:" << games << " Wins:" << wins << '\n';
+        if (user.get_winner()) {
+            std::cout << "You are a winner!\n";
+        } else {
+            std::cout << "You are a loser!\n";
+        }
+
+        std::cout << "Games:" << user.get_games() << " Wins:" << user.get_wins()
+                  << '\n';
         std::cout << std::fixed << std::setprecision(3)
                   << "Winning percentage:" << get_winning_percentage() << '\n';
     }
@@ -135,12 +158,7 @@ int main() {
     while (game.start_menu()) {
         game.bet();
         game.start();
-
-        if (game.judge()) {
-            std::cout << "You are a winner.\n";
-        } else {
-            std::cout << "You are a loser.\n";
-        }
+        game.judge();
         game.show_result();
     }
 
