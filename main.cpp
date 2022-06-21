@@ -18,31 +18,46 @@ class Dice {
 };
 
 class Game {
+    bool start_state;
     Dice dice1, dice2;
     bool result;  // true:Even false:Odd
     bool answer;  // true:Even false:Odd
 
    public:
     Game() {
+        start_state = false;
         result = true;
         answer = true;
     }
 
     bool start_menu() {
-        std::cout << "Start or end? (s/e):";
+        if (start_state) {
+            std::cout << "Continue or end? (c/e):";
+        } else {
+            std::cout << "Start or end? (s/e):";
+        }
         std::string ans;
         while (true) {
             std::cin >> ans;
 
-            if (ans == "s") {
-                return true;
+            if (start_state) {
+                if (ans == "c") {
+                    return true;
+                }
+                if (ans == "e") {
+                    return false;
+                }
+                std::cout << "Continue or end? (c/e):";
+            } else {
+                start_state = true;
+                if (ans == "s") {
+                    return true;
+                }
+                if (ans == "e") {
+                    return false;
+                }
+                std::cout << "Start or end? (s/e):";
             }
-
-            if (ans == "e") {
-                return false;
-            }
-
-            std::cout << "Start or end? (s/e):";
         }
     }
 
