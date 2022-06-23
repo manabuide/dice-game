@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -69,6 +70,7 @@ class Game {
                     return true;
                 }
                 if (ans == "e") {
+                    save_result();
                     return false;
                 }
                 std::cout << "Continue or end? (c/e):";
@@ -150,6 +152,12 @@ class Game {
                   << '\n';
         std::cout << std::fixed << std::setprecision(3)
                   << "Winning percentage:" << get_winning_percentage() << '\n';
+    }
+
+    void save_result() {
+        std::ofstream file("result.txt");
+        file << std::fixed << std::setprecision(3) << get_winning_percentage()
+             << '\n';
     }
 };
 
