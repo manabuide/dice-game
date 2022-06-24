@@ -48,6 +48,7 @@ class Game {
     Dice dice1, dice2;
     bool result;  // true:Even false:Odd
     User user;
+    std::vector<std::string> past_result;
 
    public:
     Game() {
@@ -77,6 +78,7 @@ class Game {
             } else {
                 start_state = true;
                 if (ans == "s") {
+                    read_result();
                     return true;
                 }
                 if (ans == "e") {
@@ -152,6 +154,16 @@ class Game {
                   << '\n';
         std::cout << std::fixed << std::setprecision(3)
                   << "Winning percentage:" << get_winning_percentage() << '\n';
+    }
+
+    void read_result() {
+        std::ifstream file("result.txt");
+        if (file.good()) {
+            std::string line;
+            while (std::getline(file, line)) {
+                past_result.push_back(line);
+            }
+        }
     }
 
     void save_result() {
